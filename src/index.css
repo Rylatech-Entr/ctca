@@ -691,3 +691,87 @@ body {
     grid-template-columns: 1fr;
   }
 }
+
+/* --- ADMIN GROUPING & ANIMATIONS --- */
+
+/* Stat Card Animations */
+@keyframes popIn {
+  0% { opacity: 0; transform: scale(0.9); }
+  100% { opacity: 1; transform: scale(1); }
+}
+
+.animate-pop {
+  animation: popIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+  opacity: 0;
+}
+
+/* Group Container */
+.admin-groups-container {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  margin-top: 1.5rem;
+}
+
+/* Group Panels */
+.admin-group-panel {
+  padding: 1.5rem;
+  border-radius: 16px;
+}
+
+.admin-group-panel h3 {
+  font-size: 1.1rem;
+  color: #0a192f;
+}
+
+.admin-group-panel .badge {
+  background: #f1f5f9;
+  color: #475569;
+  font-weight: 800;
+}
+
+/* Specific Group Colors */
+.group-consistent {
+  border-top: 5px solid #22c55e; /* Green */
+}
+.group-consistent .badge {
+  background: #f0fdf4;
+  color: #166534;
+}
+
+.group-followup {
+  border-top: 5px solid #d4af37; /* Gold */
+}
+.group-followup .badge {
+  background: #fefce8;
+  color: #854d0e;
+}
+
+.group-nopay {
+  border-top: 5px solid #ef4444; /* Red */
+}
+.group-nopay .badge {
+  background: #fef2f2;
+  color: #991b1b;
+}
+
+/* Row Animations */
+@keyframes slideInRight {
+  from { opacity: 0; transform: translateX(-10px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+.animated-row {
+  animation: slideInRight 0.4s ease-out forwards;
+  opacity: 0;
+}
+
+/* Mobile Adjustments */
+@media (max-width: 768px) {
+  .admin-stats-grid {
+    grid-template-columns: 1fr !important;
+  }
+  .admin-group-panel {
+    padding: 1rem;
+  }
+}

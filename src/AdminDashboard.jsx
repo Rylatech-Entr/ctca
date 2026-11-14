@@ -7,11 +7,8 @@ export default function AdminDashboard({ onLogout }) {
   const [adminLoading, setAdminLoading] = useState(true)
   const [viewYear, setViewYear] = useState('2025')
   
-  // Upload States
   const [isUploading, setIsUploading] = useState(false)
   const [uploadStatus, setUploadStatus] = useState('')
-
-  // NEW: Search State
   const [searchQuery, setSearchQuery] = useState('')
 
   const fetchAdminData = async () => {
@@ -44,15 +41,19 @@ export default function AdminDashboard({ onLogout }) {
     fetchAdminData()
   }, [viewYear])
 
-  // Filter data based on search
+  // Filter based on search
   const filteredData = adminData.filter(m => 
     m.full_name.toLowerCase().includes(searchQuery.toLowerCase()) || 
     m.member_code.toLowerCase().includes(searchQuery.toLowerCase())
   )
 
+  // GROUPING LOGIC
+  const consistentPayers = filteredData.filter(m => m.monthsPaidForYear >= 6)
+  const needsFollowUp = filteredData.filter(m => m.monthsPaidForYear > 0 && m.monthsPaidForYear < 6)
+  const noPayments = filteredData.filter(m => m.monthsPaidForYear === 0)
+
   const totalCollectedForYear = adminData.reduce((sum, m) => sum + m.totalPaidForYear, 0)
   const totalPledgedForYear = adminData.reduce((sum, m) => sum + (m.pledge * 12), 0)
-  const collectionRate = totalPledgedForYear > 0 ? ((totalCollectedForYear / totalPledgedForYear) * 100).toFixed(1) : 0
 
   const handleFileUpload = (e) => {
     const file = e.target.files[0]
@@ -69,7 +70,6 @@ export default function AdminDashboard({ onLogout }) {
         setUploadStatus(`Found ${rows.length} records. Processing...`)
 
         const membersMap = {}
-
         rows.forEach(row => {
           if (!row.full_name) return 
           const code = row.member_code || `TCA-${Math.floor(1000 + Math.random() * 9000)}`
@@ -97,32 +97,18 @@ export default function AdminDashboard({ onLogout }) {
         for (const code of memberCodes) {
           const m = membersMap[code]
           
-          const { error: memberError } = await supabase.from('members').insert([{
-            full_name: m.full_name,
-            member_code: m.member_code,
-            password: m.password,
-            phone_number: ''
+          await supabase.from('members').insert([{
+            full_name: m.full_name, member_code: m.member_code, password: m.password, phone_number: ''
           }])
 
-          if (memberError && memberError.code === '23505') {
-             console.log(`Member ${code} already exists, skipping.`)
-          }
-
           if (m.pledge > 0) {
-            await supabase.from('pledges').upsert([{
-              member_code: m.member_code,
-              amount: m.pledge
-            }], { onConflict: 'member_code' })
+            await supabase.from('pledges').upsert([{ member_code: m.member_code, amount: m.pledge }], { onConflict: 'member_code' })
           }
 
           if (m.payments.length > 0) {
             const paymentInserts = m.payments.map(p => ({
-              member_code: m.member_code,
-              amount: p.amount,
-              fund_type: 'Building Fund',
-              month_paid_for: p.month_paid_for,
-              paystack_reference: `LEGACY-${Date.now()}-${Math.random()}`, 
-              status: 'success'
+              member_code: m.member_code, amount: p.amount, fund_type: 'Building Fund',
+              month_paid_for: p.month_paid_for, paystack_reference: `LEGACY-${Date.now()}-${Math.random()}`, status: 'success'
             }))
             await supabase.from('payments').insert(paymentInserts)
           }
@@ -157,13 +143,11 @@ export default function AdminDashboard({ onLogout }) {
     printWindow.document.write(`<h2>Building Fund Report - ${viewYear}</h2>`)
     printWindow.document.write(`<div class="summary">`)
     printWindow.document.write(`<span>Total Collected: ₦${totalCollectedForYear.toLocaleString()}</span>`)
-    printWindow.document.write(`<span>Collection Rate: ${collectionRate}%</span>`)
-    printWindow.document.write(`</div>`)
+    printWindow.document.write('</div>')
     printWindow.document.write('<table><thead><tr>')
     printWindow.document.write('<th>Member Name</th><th>Member Code</th><th>Monthly Pledge</th><th>Months Paid</th><th>Total Contributed</th>')
     printWindow.document.write('</tr></thead><tbody>')
     
-    // Print only filtered data
     filteredData.forEach(member => {
       printWindow.document.write('<tr>')
       printWindow.document.write(`<td>${member.full_name}</td>`)
@@ -177,6 +161,55 @@ export default function AdminDashboard({ onLogout }) {
     printWindow.document.close()
     printWindow.focus()
     setTimeout(() => { printWindow.print() }, 500)
+  }
+
+  // Reusable Table Component for the Groups
+  const MemberTable = ({ members, title, type, emptyText }) => {
+    if (members.length === 0) {
+      return (
+        <div className="bright-panel admin-group-panel" style={{ marginTop: '1.5rem' }}>
+          <h3>{title} (0)</h3>
+          <p style={{ color: '#64748b', fontStyle: 'italic', marginTop: '1rem' }}>{emptyText}</p>
+        </div>
+      )
+    }
+
+    return (
+      <div className={`bright-panel admin-group-panel ${type}`} style={{ marginTop: '1.5rem' }}>
+        <h3 style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', margin: 0 }}>
+          {title}
+          <span className="badge" style={{ fontSize: '0.9rem', padding: '0.2rem 0.8rem', borderRadius: '20px' }}>{members.length}</span>
+        </h3>
+        <div style={{ overflowX: 'auto', marginTop: '1.5rem' }}>
+          <table className="admin-table">
+            <thead>
+              <tr>
+                <th>Member Name</th>
+                <th>Member Code</th>
+                <th>Monthly Pledge</th>
+                <th>Months Paid ({viewYear})</th>
+                <th>Total Contributed ({viewYear})</th>
+              </tr>
+            </thead>
+            <tbody>
+              {members.map((member, index) => (
+                <tr 
+                  key={member.member_code} 
+                  className="animated-row" 
+                  style={{ animationDelay: `${index * 0.05}s` }} // Staggered animation
+                >
+                  <td style={{ fontWeight: '600', color: '#0a192f' }}>{member.full_name}</td>
+                  <td>{member.member_code}</td>
+                  <td>₦{member.pledge.toLocaleString()}</td>
+                  <td>{member.monthsPaidForYear} / 12</td>
+                  <td style={{ fontWeight: '800', color: '#0a192f' }}>₦{member.totalPaidForYear.toLocaleString()}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    )
   }
 
   return (
@@ -202,21 +235,19 @@ export default function AdminDashboard({ onLogout }) {
           </div>
         </div>
 
-        <div className="admin-stats-grid">
-          <div className="bright-panel stat-card">
+        {/* STATS ROW - Only Total Members & Total Pledged */}
+        <div className="admin-stats-grid" style={{ gridTemplateColumns: '1fr 1fr' }}>
+          <div className="bright-panel stat-card animate-pop">
             <h3>Total Members</h3>
             <p className="stat-number">{adminData.length}</p>
           </div>
-          <div className="bright-panel stat-card">
+          <div className="bright-panel stat-card animate-pop" style={{ animationDelay: '0.1s' }}>
             <h3>Total Pledged ({viewYear})</h3>
             <p className="stat-number">₦{totalPledgedForYear.toLocaleString()}</p>
           </div>
-          <div className="bright-panel stat-card">
-            <h3>Collection Rate</h3>
-            <p className="stat-number">{collectionRate}%</p>
-          </div>
         </div>
 
+        {/* UPLOAD PANEL */}
         <div className="bright-panel" style={{ marginTop: '1.5rem', borderLeft: '4px solid #0a192f' }}>
           <h3 style={{ marginBottom: '1rem', color: '#0a192f' }}>Import Legacy Data (CSV)</h3>
           <p style={{ color: '#64748b', fontSize: '0.9rem', marginBottom: '1rem' }}>
@@ -235,70 +266,55 @@ export default function AdminDashboard({ onLogout }) {
           {uploadStatus && <p style={{ marginTop: '1rem', color: '#0a192f', fontWeight: '600' }}>{uploadStatus}</p>}
         </div>
 
-        <div className="bright-panel" style={{ marginTop: '1.5rem' }}>
-          <div className="panel-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem', borderBottom: '1px solid #f1f5f9', paddingBottom: '1rem' }}>
-            <h3 style={{ margin: 0 }}>Member Ledger</h3>
-            <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
-              
-              {/* NEW: Search Bar */}
-              <input 
-                type="text" 
-                placeholder="Search by name or code..." 
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                style={{ padding: '0.4rem 1rem', borderRadius: '8px', border: '1px solid #cbd5e1', outline: 'none' }}
-              />
-
-              <select className="year-selector" value={viewYear} onChange={(e) => setViewYear(e.target.value)}>
-                <option value="2025">2025</option>
-                <option value="2026">2026</option>
-                <option value="2027">2027</option>
-              </select>
-              <button onClick={handlePrint} className="btn-primary" style={{ padding: '0.4rem 1rem', width: 'auto', fontSize: '0.85rem' }}>
-                🖨️ Print Report
-              </button>
-            </div>
+        {/* TOOLBAR */}
+        <div className="bright-panel" style={{ marginTop: '1.5rem', padding: '1rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
+          <h3 style={{ margin: 0 }}>Member Directory</h3>
+          <div style={{ display: 'flex', gap: '10px', alignItems: 'center', flexWrap: 'wrap' }}>
+            <input 
+              type="text" 
+              placeholder="Search by name or code..." 
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              style={{ padding: '0.6rem 1rem', borderRadius: '8px', border: '1px solid #cbd5e1', outline: 'none', minWidth: '250px' }}
+            />
+            <select className="year-selector" value={viewYear} onChange={(e) => setViewYear(e.target.value)}>
+              <option value="2025">2025</option>
+              <option value="2026">2026</option>
+              <option value="2027">2027</option>
+            </select>
+            <button onClick={handlePrint} className="btn-primary" style={{ padding: '0.6rem 1rem', width: 'auto', fontSize: '0.85rem' }}>
+              🖨️ Print Report
+            </button>
           </div>
-
-          {adminLoading ? (
-            <p>Loading member data...</p>
-          ) : (
-            <div style={{ overflowX: 'auto' }}>
-              <table className="admin-table">
-                <thead>
-                  <tr>
-                    <th>Member Name</th>
-                    <th>Member Code</th>
-                    <th>Monthly Pledge</th>
-                    <th>Months Paid ({viewYear})</th>
-                    <th>Total Contributed ({viewYear})</th>
-                    <th>Status</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {filteredData.length === 0 ? (
-                    <tr><td colSpan="6" style={{ textAlign: 'center', padding: '2rem' }}>No members found.</td></tr>
-                  ) : (
-                    filteredData.map(member => (
-                      <tr key={member.member_code}>
-                        <td style={{ fontWeight: '600', color: '#0a192f' }}>{member.full_name}</td>
-                        <td>{member.member_code}</td>
-                        <td>₦{member.pledge.toLocaleString()}</td>
-                        <td>{member.monthsPaidForYear} / 12</td>
-                        <td style={{ fontWeight: '800', color: '#0a192f' }}>₦{member.totalPaidForYear.toLocaleString()}</td>
-                        <td>
-                          <span className={`status-badge ${member.monthsPaidForYear >= 12 ? 'full' : member.monthsPaidForYear > 0 ? 'partial' : 'none'}`}>
-                            {member.monthsPaidForYear >= 12 ? 'Fully Paid' : member.monthsPaidForYear > 0 ? 'In Progress' : 'No Payments'}
-                          </span>
-                        </td>
-                      </tr>
-                    ))
-                  )}
-                </tbody>
-              </table>
-            </div>
-          )}
         </div>
+
+        {/* GROUPED TABLES */}
+        {adminLoading ? (
+          <p style={{ textAlign: 'center', padding: '3rem', color: '#64748b' }}>Loading member data...</p>
+        ) : (
+          <div className="admin-groups-container">
+            <MemberTable 
+              members={consistentPayers} 
+              title="Consistent Payers (6+ Months)" 
+              type="group-consistent" 
+              emptyText="No members in this category yet." 
+            />
+            
+            <MemberTable 
+              members={needsFollowUp} 
+              title="Needs Follow-up (1-5 Months)" 
+              type="group-followup" 
+              emptyText="No members in this category yet." 
+            />
+
+            <MemberTable 
+              members={noPayments} 
+              title="No Payments (0 Months)" 
+              type="group-nopay" 
+              emptyText="All members have made payments! Praise God." 
+            />
+          </div>
+        )}
       </main>
     </div>
   )

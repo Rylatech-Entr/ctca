@@ -5,8 +5,7 @@ import { PaystackButton } from 'paystack-react-lite'
 import { Eye, EyeOff } from 'lucide-react'
 import AdminDashboard from './AdminDashboard'
 
-// --- BIBLE PROMISES LIST (ALL 55) ---
-
+// --- BIBLE PROMISES LIST (KJV) ---
 const PROMISE_VERSES = [
   {
     ref: "Jeremiah 29:11",
@@ -242,8 +241,6 @@ function AdminRoute() {
   })
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
-  
-  // Admin password visibility
   const [showAdminPassword, setShowAdminPassword] = useState(false)
 
   const handleAdminLogin = (e) => {
@@ -321,7 +318,6 @@ function MemberApp() {
   const [signupPhone, setSignupPhone] = useState('')
   const [signupPassword, setSignupPassword] = useState('')
   
-  // State for password visibility
   const [showLoginPassword, setShowLoginPassword] = useState(false)
   const [showSignupPassword, setShowSignupPassword] = useState(false)
 
@@ -352,20 +348,18 @@ function MemberApp() {
   const fetchRandomScripture = async () => {
     try {
       const randomPromise = PROMISE_VERSES[Math.floor(Math.random() * PROMISE_VERSES.length)]
-      const response = await fetch(`https://bible-api.com/${encodeURIComponent(randomPromise.ref)}?translation=web`)
-      const data = await response.json()
-      let finalText = randomPromise.summary
-      let finalRef = randomPromise.ref
-      if (data && data.text) {
-        finalText = data.text.trim()
-        finalRef = data.reference
-      }
-      setCurrentScripture({ text: finalText, ref: finalRef })
-      const wordCount = finalText.split(/\s+/).length
+      setCurrentScripture({ 
+        text: randomPromise.text, 
+        ref: randomPromise.ref 
+      })
+      const wordCount = randomPromise.text.split(/\s+/).length
       const readingTimeMs = Math.max(6000, (wordCount / 3.5) * 1000 + 2000) 
       setTimeout(fetchRandomScripture, readingTimeMs)
     } catch (error) {
-      setCurrentScripture({ text: 'God has plans of peace, hope and a good future for His people.', ref: 'Jeremiah 29:11' })
+      setCurrentScripture({ 
+        text: 'For I know the thoughts that I think toward you, saith the LORD, thoughts of peace, and not of evil, to give you an expected end.', 
+        ref: 'Jeremiah 29:11' 
+      })
       setTimeout(fetchRandomScripture, 10000)
     }
   }
@@ -555,7 +549,7 @@ function MemberApp() {
             </div>
             <div className="compact-scripture">
               <span className="scripture-label">PROMISE OF THE DAY</span>
-              <p>"{currentScripture.text}" <strong>— {currentScripture.ref}</strong></p>
+              <p style={{ whiteSpace: 'pre-wrap' }}>"{currentScripture.text}" <strong>— {currentScripture.ref}</strong></p>
             </div>
           </div>
 
@@ -637,7 +631,7 @@ function MemberApp() {
                   <select className="styled-select" value={paymentFund} onChange={(e) => { setPaymentFund(e.target.value); setSelectedMonths([]); }}>
                     <option value="Building Fund">Building Fund (Pledge)</option>
                     <option value="Emergency Fund">Emergency Fund</option>
-                    <option value="Welfare Fund">Welfare Fund</option>
+                    <option value="Missionary Fund">Missionary Fund</option>
                   </select>
                 </div>
 
@@ -697,7 +691,7 @@ function MemberApp() {
         </div>
         <div className="brand-content">
           <h1>Charity Tabernacle Christian Assembly</h1>
-          <h1><span>Fund App</span> Project</h1>
+          <h1><span>Fund App</span></h1>
           <p>"Haggai 1:8"</p>
         </div>
       </div>

@@ -6,68 +6,232 @@ import { Eye, EyeOff } from 'lucide-react'
 import AdminDashboard from './AdminDashboard'
 
 // --- BIBLE PROMISES LIST (ALL 55) ---
+
 const PROMISE_VERSES = [
-  { ref: "Jeremiah 29:11", summary: "God has plans of peace, hope and a good future for His people." },
-  { ref: "Deuteronomy 28:1-6", summary: "Blessings upon obedience, in the city, in the field and in daily life." },
-  { ref: "Psalm 23:1-6", summary: "The Lord is our Shepherd; He provides, guides and sustains us." },
-  { ref: "Psalm 1:1-3", summary: "Those who delight in God's Word shall flourish like a tree planted by rivers of water." },
-  { ref: "Isaiah 54:10", summary: "God's covenant of peace will not be removed." },
-  { ref: "Proverbs 3:5-6", summary: "God promises to direct the paths of those who trust Him." },
-  { ref: "Psalm 84:11", summary: "God gives grace and glory and withholds no good thing from those who walk uprightly." },
-  { ref: "Joel 2:25-27", summary: "God promises restoration of the years that were lost." },
-  { ref: "Isaiah 60:1-5", summary: "God's light will shine upon His people, and they will experience restoration and increase." },
-  { ref: "Psalm 65:11", summary: "God crowns the year with His goodness." },
-  { ref: "Philippians 4:19", summary: "God will supply all your needs according to His riches in glory." },
-  { ref: "2 Corinthians 9:8", summary: "God is able to make all grace abound towards you, so you have sufficiency for every good work." },
-  { ref: "Deuteronomy 8:18", summary: "God gives the ability to produce wealth." },
-  { ref: "Malachi 3:10-12", summary: "God promises blessing and provision in connection with faithfulness in giving." },
-  { ref: "Psalm 34:10", summary: "Those who seek the Lord will not lack any good thing." },
-  { ref: "Proverbs 10:22", summary: "The blessing of the Lord makes rich without adding sorrow." },
-  { ref: "Matthew 6:31-33", summary: "Seek God's kingdom first, and He will provide what you need." },
-  { ref: "Luke 6:38", summary: "Give, and it will be given to you." },
-  { ref: "Psalm 112:1-3", summary: "Those who fear the Lord and delight in His commandments are blessed." },
-  { ref: "3 John 1:2", summary: "A prayer for prosperity and good health, even as the soul prospers." },
-  { ref: "Isaiah 41:10", summary: "Do not fear; God will strengthen, help and uphold you." },
-  { ref: "Psalm 91:1-16", summary: "God's protection, refuge and deliverance for those who dwell in Him." },
-  { ref: "Isaiah 54:17", summary: "No weapon formed against God's servants will ultimately prosper." },
-  { ref: "Romans 8:31-39", summary: "Nothing can separate believers from the love of God in Christ." },
-  { ref: "Deuteronomy 31:8", summary: "God goes before you and will never forsake you." },
-  { ref: "Exodus 14:13-14", summary: "The Lord fights for His people." },
-  { ref: "2 Thessalonians 3:3", summary: "The Lord is faithful; He will strengthen and protect you from evil." },
-  { ref: "Psalm 121:1-8", summary: "God watches over your going out and coming in." },
-  { ref: "1 John 5:4-5", summary: "Faith in Christ gives believers victory over the world." },
-  { ref: "Romans 16:20", summary: "God will crush Satan under the feet of His people." },
-  { ref: "Jeremiah 30:17", summary: "God promises healing and restoration." },
-  { ref: "Isaiah 53:4-5", summary: "The prophecy of the suffering Servant who bears our infirmities and brings healing through His wounds." },
-  { ref: "Exodus 15:26", summary: "God reveals Himself as the Lord who heals." },
-  { ref: "Psalm 103:1-5", summary: "God forgives, heals, redeems and satisfies His people with good things." },
-  { ref: "Isaiah 40:29-31", summary: "Those who wait upon the Lord receive renewed strength." },
-  { ref: "Proverbs 4:20-22", summary: "God's words bring life and health to those who receive them." },
-  { ref: "Psalm 91:16", summary: "God promises satisfaction with long life and His salvation." },
-  { ref: "Isaiah 46:4", summary: "God promises to sustain His people even in old age." },
-  { ref: "Jeremiah 33:6", summary: "God promises health, healing, peace and truth." },
-  { ref: "1 Peter 5:10", summary: "After suffering for a while, God promises to restore, establish, strengthen and settle His people." },
-  { ref: "Psalm 5:12", summary: "God surrounds the righteous with favour as with a shield." },
-  { ref: "Isaiah 43:18-19", summary: "God promises to do a new thing and make a way in the wilderness." },
-  { ref: "Deuteronomy 28:13", summary: "God promises to make His obedient people the head and not the tail." },
-  { ref: "Psalm 75:6-7", summary: "Promotion and exaltation ultimately come from God." },
-  { ref: "Proverbs 4:18", summary: "The path of the righteous shines brighter and brighter unto the perfect day." },
-  { ref: "Isaiah 61:7", summary: "God promises double honour instead of shame." },
-  { ref: "John 14:27", summary: "Jesus gives His disciples His peace, not as the world gives." },
-  { ref: "Ephesians 3:20", summary: "God is able to do exceedingly abundantly above all we ask or think." },
-  { ref: "Zechariah 9:12", summary: "God promises a double restoration to prisoners of hope." },
-  { ref: "Romans 8:28", summary: "God works all things together for good for those who love Him and are called according to His purpose." },
-  { ref: "Genesis 12:1-3", summary: "The promise of blessing and becoming a blessing." },
-  { ref: "Isaiah 58:11", summary: "God's promise of continual guidance and satisfaction." },
-  { ref: "Psalm 37:4-5", summary: "Delight yourself in the Lord and commit your way to Him." },
-  { ref: "Matthew 11:28-30", summary: "Rest for those who come to Christ." },
-  { ref: "Revelation 21:3-7", summary: "The promise of eternal life and a future without sorrow, death or pain." }
-]
+  {
+    ref: "Jeremiah 29:11",
+    text: "For I know the thoughts that I think toward you, saith the LORD, thoughts of peace, and not of evil, to give you an expected end."
+  },
+  {
+    ref: "Deuteronomy 28:1-6",
+    text: "1. And it shall come to pass, if thou shalt hearken diligently unto the voice of the LORD thy God, to observe and to do all his commandments which I command thee this day, that the LORD thy God will set thee on high above all nations of the earth:\n2. And all these blessings shall come on thee, and overtake thee, if thou shalt hearken unto the voice of the LORD thy God.\n3. Blessed shalt thou be in the city, and blessed shalt thou be in the field.\n4. Blessed shall be the fruit of thy body, and the fruit of thy ground, and the fruit of thy cattle, the increase of thy kine, and the flocks of thy sheep.\n5. Blessed shall be thy basket and thy store.\n6. Blessed shalt thou be when thou comest in, and blessed shalt thou be when thou goest out."
+  },
+  {
+    ref: "Psalm 23:1-6",
+    text: "1. The LORD is my shepherd; I shall not want.\n2. He maketh me to lie down in green pastures: he leadeth me beside the still waters.\n3. He restoreth my soul: he leadeth me in the paths of righteousness for his name's sake.\n4. Yea, though I walk through the valley of the shadow of death, I will fear no evil: for thou art with me; thy rod and thy staff they comfort me.\n5. Thou preparest a table before me in the presence of mine enemies: thou anointest my head with oil; my cup runneth over.\n6. Surely goodness and mercy shall follow me all the days of my life: and I will dwell in the house of the LORD for ever."
+  },
+  {
+    ref: "Psalm 1:1-3",
+    text: "1. Blessed is the man that walketh not in the counsel of the ungodly, nor standeth in the way of sinners, nor sitteth in the seat of the scornful.\n2. But his delight is in the law of the LORD; and in his law doth he meditate day and night.\n3. And he shall be like a tree planted by the rivers of water, that bringeth forth his fruit in his season; his leaf also shall not wither; and whatsoever he doeth shall prosper."
+  },
+  {
+    ref: "Isaiah 54:10",
+    text: "For the mountains shall depart, and the hills be removed; but my kindness shall not depart from thee, neither shall the covenant of my peace be removed, saith the LORD that hath mercy on thee."
+  },
+  {
+    ref: "Proverbs 3:5-6",
+    text: "5. Trust in the LORD with all thine heart; and lean not unto thine own understanding.\n6. In all thy ways acknowledge him, and he shall direct thy paths."
+  },
+  {
+    ref: "Psalm 84:11",
+    text: "For the LORD God is a sun and shield: the LORD will give grace and glory: no good thing will he withhold from them that walk uprightly."
+  },
+  {
+    ref: "Joel 2:25-27",
+    text: "25. And I will restore to you the years that the locust hath eaten, the cankerworm, and the caterpiller, and the palmerworm, my great army which I sent among you.\n26. And ye shall eat in plenty, and be satisfied, and praise the name of the LORD your God, that hath dealt wondrously with you: and my people shall never be ashamed.\n27. And ye shall know that I am in the midst of Israel, and that I am the LORD your God, and none else: and my people shall never be ashamed."
+  },
+  {
+    ref: "Isaiah 60:1-5",
+    text: "1. Arise, shine; for thy light is come, and the glory of the LORD is risen upon thee.\n2. For, behold, the darkness shall cover the earth, and gross darkness the people: but the LORD shall arise upon thee, and his glory shall be seen upon thee.\n3. And the Gentiles shall come to thy light, and kings to the brightness of thy rising.\n4. Lift up thine eyes round about, and see: all they gather themselves together, they come to thee: thy sons shall come from far, and thy daughters shall be nursed at thy side.\n5. Then thou shalt see, and flow together, and thine heart shall fear, and be enlarged; because the abundance of the sea shall be converted unto thee, the forces of the Gentiles shall come unto thee."
+  },
+  {
+    ref: "Psalm 65:11",
+    text: "Thou crownest the year with thy goodness; and thy paths drop fatness."
+  },
+  {
+    ref: "Philippians 4:19",
+    text: "But my God shall supply all your need according to his riches in glory by Christ Jesus."
+  },
+  {
+    ref: "2 Corinthians 9:8",
+    text: "And God is able to make all grace abound toward you; that ye, always having all sufficiency in all things, may abound to every good work:"
+  },
+  {
+    ref: "Deuteronomy 8:18",
+    text: "But thou shalt remember the LORD thy God: for it is he that giveth thee power to get wealth, that he may establish his covenant which he sware unto thy fathers, as it is this day."
+  },
+  {
+    ref: "Malachi 3:10-12",
+    text: "10. Bring ye all the tithes into the storehouse, that there may be meat in mine house, and prove me now herewith, saith the LORD of hosts, if I will not open you the windows of heaven, and pour you out a blessing, that there shall not be room enough to receive it.\n11. And I will rebuke the devourer for your sakes, and he shall not destroy the fruits of your ground; neither shall your vine cast her fruit before the time in the field, saith the LORD of hosts.\n12. And all nations shall call you blessed: for ye shall be a delightsome land, saith the LORD of hosts."
+  },
+  {
+    ref: "Psalm 34:10",
+    text: "The young lions do lack, and suffer hunger: but they that seek the LORD shall not want any good thing."
+  },
+  {
+    ref: "Proverbs 10:22",
+    text: "The blessing of the LORD, it maketh rich, and he addeth no sorrow with it."
+  },
+  {
+    ref: "Matthew 6:31-33",
+    text: "31. Therefore take no thought, saying, What shall we eat? or, What shall we drink? or, Wherewithal shall we be clothed?\n32. (For after all these things do the Gentiles seek:) for your heavenly Father knoweth that ye have need of all these things.\n33. But seek ye first the kingdom of God, and his righteousness; and all these things shall be added unto you."
+  },
+  {
+    ref: "Luke 6:38",
+    text: "Give, and it shall be given unto you; good measure, pressed down, and shaken together, and running over, shall men give into your bosom. For with the same measure that ye mete withal it shall be measured to you again."
+  },
+  {
+    ref: "Psalm 112:1-3",
+    text: "1. Praise ye the LORD. Blessed is the man that feareth the LORD, that delighteth greatly in his commandments.\n2. His seed shall be mighty upon earth: the generation of the upright shall be blessed.\n3. Wealth and riches shall be in his house: and his righteousness endureth for ever."
+  },
+  {
+    ref: "3 John 1:2",
+    text: "Beloved, I wish above all things that thou mayest prosper and be in health, even as thy soul prospereth."
+  },
+  {
+    ref: "Isaiah 41:10",
+    text: "Fear thou not; for I am with thee: be not dismayed; for I am thy God: I will strengthen thee; yea, I will help thee; yea, I will uphold thee with the right hand of my righteousness."
+  },
+  {
+    ref: "Psalm 91:1-16",
+    text: "1. He that dwelleth in the secret place of the most High shall abide under the shadow of the Almighty.\n2. I will say of the LORD, He is my refuge and my fortress: my God; in him will I trust.\n3. Surely he shall deliver thee from the snare of the fowler, and from the noisome pestilence.\n4. He shall cover thee with his feathers, and under his wings shalt thou trust: his truth shall be thy shield and buckler.\n5. Thou shalt not be afraid for the terror by night; nor for the arrow that flieth by day;\n6. Nor for the pestilence that walketh in darkness; nor for the destruction that wasteth at noonday.\n7. A thousand shall fall at thy side, and ten thousand at thy right hand; but it shall not come nigh thee.\n8. Only with thine eyes shalt thou behold and see the reward of the wicked.\n9. Because thou hast made the LORD, which is my refuge, even the most High, thy habitation;\n10. There shall no evil befall thee, neither shall any plague come nigh thy dwelling.\n11. For he shall give his angels charge over thee, to keep thee in all thy ways.\n12. They shall bear thee up in their hands, lest thou dash thy foot against a stone.\n13. Thou shalt tread upon the lion and adder: the young lion and the dragon shalt thou trample under feet.\n14. Because he hath set his love upon me, therefore will I deliver him: I will set him on high, because he hath known my name.\n15. He shall call upon me, and I will answer him: I will be with him in trouble; I will deliver him, and honour him.\n16. With long life will I satisfy him, and shew him my salvation."
+  },
+  {
+    ref: "Isaiah 54:17",
+    text: "No weapon that is formed against thee shall prosper; and every tongue that shall rise against thee in judgment thou shalt condemn. This is the heritage of the servants of the LORD, and their righteousness is of me, saith the LORD."
+  },
+  {
+    ref: "Romans 8:31-39",
+    text: "31. What shall we then say to these things? If God be for us, who can be against us?\n32. He that spared not his own Son, but delivered him up for us all, how shall he not with him also freely give us all things?\n33. Who shall lay any thing to the charge of God's elect? It is God that justifieth.\n34. Who is he that condemneth? It is Christ that died, yea rather, that is risen again, who is even at the right hand of God, who also maketh intercession for us.\n35. Who shall separate us from the love of Christ? shall tribulation, or distress, or persecution, or famine, or nakedness, or peril, or sword?\n36. As it is written, For thy sake we are killed all the day long; we are accounted as sheep for the slaughter.\n37. Nay, in all these things we are more than conquerors through him that loved us.\n38. For I am persuaded, that neither death, nor life, nor angels, nor principalities, nor powers, nor things present, nor things to come,\n39. Nor height, nor depth, nor any other creature, shall be able to separate us from the love of God, which is in Christ Jesus our Lord."
+  },
+  {
+    ref: "Deuteronomy 31:8",
+    text: "And the LORD, he it is that doth go before thee; he will be with thee, he will not fail thee, neither forsake thee: fear not, neither be dismayed."
+  },
+  {
+    ref: "Exodus 14:13-14",
+    text: "13. And Moses said unto the people, Fear ye not, stand still, and see the salvation of the LORD, which he will shew to you to day: for the Egyptians whom ye have seen to day, ye shall see them again no more for ever.\n14. The LORD shall fight for you, and ye shall hold your peace."
+  },
+  {
+    ref: "2 Thessalonians 3:3",
+    text: "But the Lord is faithful, who shall stablish you, and keep you from evil."
+  },
+  {
+    ref: "Psalm 121:1-8",
+    text: "1. I will lift up mine eyes unto the hills, from whence cometh my help.\n2. My help cometh from the LORD, which made heaven and earth.\n3. He will not suffer thy foot to be moved: he that keepeth thee will not slumber.\n4. Behold, he that keepeth Israel shall neither slumber nor sleep.\n5. The LORD is thy keeper: the LORD is thy shade upon thy right hand.\n6. The sun shall not smite thee by day, nor the moon by night.\n7. The LORD shall preserve thee from all evil: he shall preserve thy soul.\n8. The LORD shall preserve thy going out and thy coming in from this time forth, and even for evermore."
+  },
+  {
+    ref: "1 John 5:4-5",
+    text: "4. For whatsoever is born of God overcometh the world: and this is the victory that overcometh the world, even our faith.\n5. Who is he that overcometh the world, but he that believeth that Jesus is the Son of God?"
+  },
+  {
+    ref: "Romans 16:20",
+    text: "And the God of peace shall bruise Satan under your feet shortly. The grace of our Lord Jesus Christ be with you. Amen."
+  },
+  {
+    ref: "Jeremiah 30:17",
+    text: "For I will restore health unto thee, and I will heal thee of thy wounds, saith the LORD; because they called thee an Outcast, saying, This is Zion, whom no man seeketh after."
+  },
+  {
+    ref: "Isaiah 53:4-5",
+    text: "4. Surely he hath borne our griefs, and carried our sorrows: yet we did esteem him stricken, smitten of God, and afflicted.\n5. But he was wounded for our transgressions, he was bruised for our iniquities: the chastisement of our peace was upon him; and with his stripes we are healed."
+  },
+  {
+    ref: "Exodus 15:26",
+    text: "And said, If thou wilt diligently hearken to the voice of the LORD thy God, and wilt do that which is right in his sight, and wilt give ear to his commandments, and keep all his statutes, I will put none of these diseases upon thee, which I have brought upon the Egyptians: for I am the LORD that healeth thee."
+  },
+  {
+    ref: "Psalm 103:1-5",
+    text: "1. Bless the LORD, O my soul: and all that is within me, bless his holy name.\n2. Bless the LORD, O my soul, and forget not all his benefits:\n3. Who forgiveth all thine iniquities; who healeth all thy diseases;\n4. Who redeemeth thy life from destruction; who crowneth thee with lovingkindness and tender mercies;\n5. Who satisfieth thy mouth with good things; so that thy youth is renewed like the eagle's."
+  },
+  {
+    ref: "Isaiah 40:29-31",
+    text: "29. He giveth power to the faint; and to them that have no might he increaseth strength.\n30. Even the youths shall faint and be weary, and the young men shall utterly fall:\n31. But they that wait upon the LORD shall renew their strength; they shall mount up with wings as eagles; they shall run, and not be weary; and they shall walk, and not faint."
+  },
+  {
+    ref: "Proverbs 4:20-22",
+    text: "20. My son, attend to my words; incline thine ear unto my sayings.\n21. Let them not depart from thine eyes; keep them in the midst of thine heart.\n22. For they are life unto those that find them, and health to all their flesh."
+  },
+  {
+    ref: "Psalm 91:16",
+    text: "With long life will I satisfy him, and shew him my salvation."
+  },
+  {
+    ref: "Isaiah 46:4",
+    text: "And even to your old age I am he; and even to hoar hairs will I carry you: I have made, and I will bear; even I will carry, and will deliver you."
+  },
+  {
+    ref: "Jeremiah 33:6",
+    text: "Behold, I will bring it health and cure, and I will cure them, and will reveal unto them the abundance of peace and truth."
+  },
+  {
+    ref: "1 Peter 5:10",
+    text: "But the God of all grace, who hath called us unto his eternal glory by Christ Jesus, after that ye have suffered a while, make you perfect, stablish, strengthen, settle you."
+  },
+  {
+    ref: "Psalm 5:12",
+    text: "For thou, LORD, wilt bless the righteous; with favour wilt thou compass him as with a shield."
+  },
+  {
+    ref: "Isaiah 43:18-19",
+    text: "18. Remember ye not the former things, neither consider the things of old.\n19. Behold, I will do a new thing; now it shall spring forth; shall ye not know it? I will even make a way in the wilderness, and rivers in the desert."
+  },
+  {
+    ref: "Deuteronomy 28:13",
+    text: "And the LORD shall make thee the head, and not the tail; and thou shalt be above only, and thou shalt not be beneath; if that thou hearken unto the commandments of the LORD thy God, which I command thee this day, to observe and to do them:"
+  },
+  {
+    ref: "Psalm 75:6-7",
+    text: "6. For promotion cometh neither from the east, nor from the west, nor from the south.\n7. But God is the judge: he putteth down one, and setteth up another."
+  },
+  {
+    ref: "Proverbs 4:18",
+    text: "But the path of the just is as the shining light, that shineth more and more unto the perfect day."
+  },
+  {
+    ref: "Isaiah 61:7",
+    text: "For your shame ye shall have double; and for confusion they shall rejoice in their portion: therefore in their land they shall possess the double: everlasting joy shall be unto them."
+  },
+  {
+    ref: "John 14:27",
+    text: "Peace I leave with you, my peace I give unto you: not as the world giveth, give I unto you. Let not your heart be troubled, neither let it be afraid."
+  },
+  {
+    ref: "Ephesians 3:20",
+    text: "Now unto him that is able to do exceeding abundantly above all that we ask or think, according to the power that worketh in us,"
+  },
+  {
+    ref: "Zechariah 9:12",
+    text: "Turn you to the strong hold, ye prisoners of hope: even to day do I declare that I will render double unto thee;"
+  },
+  {
+    ref: "Romans 8:28",
+    text: "And we know that all things work together for good to them that love God, to them who are the called according to his purpose."
+  },
+  {
+    ref: "Genesis 12:1-3",
+    text: "1. Now the LORD had said unto Abram, Get thee out of thy country, and from thy kindred, and from thy father's house, unto a land that I will shew thee:\n2. And I will make of thee a great nation, and I will bless thee, and make thy name great; and thou shalt be a blessing:\n3. And I will bless them that bless thee, and curse him that curseth thee: and in thee shall all families of the earth be blessed."
+  },
+  {
+    ref: "Isaiah 58:11",
+    text: "And the LORD shall guide thee continually, and satisfy thy soul in drought, and make fat thy bones: and thou shalt be like a watered garden, and like a spring of water, whose waters fail not."
+  },
+  {
+    ref: "Psalm 37:4-5",
+    text: "4. Delight thyself also in the LORD; and he shall give thee the desires of thine heart.\n5. Commit thy way unto the LORD; trust also in him; and he shall bring it to pass."
+  },
+  {
+    ref: "Matthew 11:28-30",
+    text: "28. Come unto me, all ye that labour and are heavy laden, and I will give you rest.\n29. Take my yoke upon you, and learn of me; for I am meek and lowly in heart: and ye shall find rest unto your souls.\n30. For my yoke is easy, and my burden is light."
+  },
+  {
+    ref: "Revelation 21:3-7",
+    text: "3. And I heard a great voice out of heaven saying, Behold, the tabernacle of God is with men, and he will dwell with them, and they shall be his people, and God himself shall be with them, and be their God.\n4. And God shall wipe away all tears from their eyes; and there shall be no more death, neither sorrow, nor crying, neither shall there be any more pain: for the former things are passed away.\n5. And he that sat upon the throne said, Behold, I make all things new. And he said unto me, Write: for these words are true and faithful.\n6. And he said unto me, It is done. I am Alpha and Omega, the beginning and the end. I will give unto him that is athirst of the fountain of the water of life freely.\n7. He that overcometh shall inherit all things; and I will be his God, and he shall be my son."
+  }
+];
 
 const MINIMUM_PAYMENT = 2000
-const PAYSTACK_PUBLIC_KEY = "pk_test_bde5a22d65ccb49fa64a2ba08ef180273eafe866"
-
-
+const PAYSTACK_PUBLIC_KEY = "pk_test_bde5a22d65ccb49fa64a2ba08ef180273eafe866" 
 
 // ==========================================
 // --- ADMIN LOGIN & ROUTE ---
@@ -78,6 +242,9 @@ function AdminRoute() {
   })
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
+  
+  // Admin password visibility
+  const [showAdminPassword, setShowAdminPassword] = useState(false)
 
   const handleAdminLogin = (e) => {
     e.preventDefault()
@@ -107,13 +274,23 @@ function AdminRoute() {
         <form onSubmit={handleAdminLogin}>
           <div className="input-group">
             <label style={{ color: '#a8b2c1' }}>Admin Password</label>
-            <input 
-              type="password" 
-              value={password} 
-              onChange={(e) => setPassword(e.target.value)} 
-              required 
-              autoFocus
-            />
+            <div style={{ position: 'relative' }}>
+              <input 
+                type={showAdminPassword ? "text" : "password"} 
+                value={password} 
+                onChange={(e) => setPassword(e.target.value)} 
+                required 
+                autoFocus
+                style={{ paddingRight: '40px' }}
+              />
+              <button 
+                type="button"
+                onClick={() => setShowAdminPassword(!showAdminPassword)}
+                style={{ position: 'absolute', right: '10px', top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', cursor: 'pointer', color: '#64748b' }}
+              >
+                {showAdminPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+              </button>
+            </div>
           </div>
           <button type="submit" className="btn-primary" style={{ background: '#d4af37', color: '#0a192f' }}>
             Access Dashboard
@@ -133,7 +310,6 @@ function MemberApp() {
   const [loading, setLoading] = useState(false)
   const [errorMsg, setErrorMsg] = useState('')
   
-  // Initialize from localStorage synchronously
   const [currentUser, setCurrentUser] = useState(() => {
     const saved = localStorage.getItem('ctca_user')
     return saved ? JSON.parse(saved) : null
@@ -145,8 +321,9 @@ function MemberApp() {
   const [signupPhone, setSignupPhone] = useState('')
   const [signupPassword, setSignupPassword] = useState('')
   
-  // NEW: State for password visibility toggle
-  const [showPassword, setShowPassword] = useState(false)
+  // State for password visibility
+  const [showLoginPassword, setShowLoginPassword] = useState(false)
+  const [showSignupPassword, setShowSignupPassword] = useState(false)
 
   const [payments, setPayments] = useState([])
   const [viewYear, setViewYear] = useState('2025')
@@ -220,7 +397,6 @@ function MemberApp() {
     
     if (error) {
       if (error.code === '23505') {
-        // This is the unique constraint violation for full_name
         setErrorMsg("An account with this exact name already exists. Please add a middle name or initial.")
       } else {
         setErrorMsg("Error creating account. Please try again.")
@@ -242,7 +418,7 @@ function MemberApp() {
       setErrorMsg("Invalid Member Code or Password.")
     } else {
       setCurrentUser(data)
-      localStorage.setItem('ctca_user', JSON.stringify(data)) // Save session
+      localStorage.setItem('ctca_user', JSON.stringify(data)) 
       setLoginCode(''); setLoginPassword('')
     }
     setLoading(false)
@@ -250,7 +426,7 @@ function MemberApp() {
 
   const handleLogout = () => {
     setCurrentUser(null)
-    localStorage.removeItem('ctca_user') // Clear session
+    localStorage.removeItem('ctca_user') 
     setAuthMode('login')
     setPayments([])
     setMonthlyPledge(0)
@@ -285,13 +461,10 @@ function MemberApp() {
 
   const toggleMonthSelection = (monthValue) => {
     if (paymentFund !== 'Building Fund') return;
-    
-    // Prevent ticking before pledge is set
     if (monthlyPledge === 0) {
       alert("Please set your monthly pledge before selecting months to pay.");
       return;
     }
-
     const isPaid = payments.some(p => p.month_paid_for === monthValue && p.fund_type === 'Building Fund')
     if (isPaid) return; 
     
@@ -523,8 +696,8 @@ function MemberApp() {
           <img src="https://images.unsplash.com/photo-1438032005730-c779502df39b?q=80&w=2071&auto=format&fit=crop" alt="Church" />
         </div>
         <div className="brand-content">
-          <h1>Charity Terbanacle Christian Assembly</h1>
-          <h1><span>Building Fund</span> Project</h1>
+          <h1>Charity Tabernacle Christian Assembly</h1>
+          <h1><span>Fund App</span> Project</h1>
           <p>"Haggai 1:8"</p>
         </div>
       </div>
@@ -544,7 +717,23 @@ function MemberApp() {
                 </div>
                 <div className="input-group">
                   <label>Password</label>
-                  <input type="password" placeholder="••••••••" value={loginPassword} onChange={(e) => setLoginPassword(e.target.value)} required />
+                  <div style={{ position: 'relative' }}>
+                    <input 
+                      type={showLoginPassword ? "text" : "password"} 
+                      placeholder="••••••••" 
+                      value={loginPassword} 
+                      onChange={(e) => setLoginPassword(e.target.value)} 
+                      required 
+                      style={{ paddingRight: '40px' }}
+                    />
+                    <button 
+                      type="button"
+                      onClick={() => setShowLoginPassword(!showLoginPassword)}
+                      style={{ position: 'absolute', right: '10px', top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', cursor: 'pointer', color: '#64748b' }}
+                    >
+                      {showLoginPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                    </button>
+                  </div>
                 </div>
                 <button type="submit" className="btn-primary" disabled={loading}>
                   {loading ? 'Checking...' : 'Log In'}
@@ -580,7 +769,7 @@ function MemberApp() {
                   <label>Create a Password</label>
                   <div style={{ position: 'relative' }}>
                     <input 
-                      type={showPassword ? "text" : "password"} 
+                      type={showSignupPassword ? "text" : "password"} 
                       placeholder="••••••••" 
                       value={signupPassword} 
                       onChange={(e) => setSignupPassword(e.target.value)} 
@@ -591,10 +780,10 @@ function MemberApp() {
                     />
                     <button 
                       type="button"
-                      onClick={() => setShowPassword(!showPassword)}
+                      onClick={() => setShowSignupPassword(!showSignupPassword)}
                       style={{ position: 'absolute', right: '10px', top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', cursor: 'pointer', color: '#64748b' }}
                     >
-                      {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                      {showSignupPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                     </button>
                   </div>
                 </div>

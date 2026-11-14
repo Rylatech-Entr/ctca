@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { supabase } from './supabase'
 import Papa from 'papaparse'
-import { Search, Printer, AlertCircle, CheckCircle, Clock } from 'lucide-react'
+import { Search, Printer, AlertCircle, CheckCircle, Clock, Users } from 'lucide-react'
 
 export default function AdminDashboard({ onLogout }) {
   const [adminData, setAdminData] = useState([])
@@ -42,14 +42,21 @@ export default function AdminDashboard({ onLogout }) {
     fetchAdminData()
   }, [viewYear])
 
+  // Filter based on search
   const filteredData = adminData.filter(m => 
     m.full_name.toLowerCase().includes(searchQuery.toLowerCase()) || 
     m.member_code.toLowerCase().includes(searchQuery.toLowerCase())
   )
 
+  // Grouped Arrays
   const consistentPayers = filteredData.filter(m => m.monthsPaidForYear >= 6)
   const needsFollowUp = filteredData.filter(m => m.monthsPaidForYear > 0 && m.monthsPaidForYear < 6)
   const noPayments = filteredData.filter(m => m.monthsPaidForYear === 0)
+  
+  // NEW: Alphabetical list of all members
+  const allMembersAlphabetical = [...filteredData].sort((a, b) => 
+    a.full_name.localeCompare(b.full_name)
+  )
 
   const totalCollectedForYear = adminData.reduce((sum, m) => sum + m.totalPaidForYear, 0)
   const totalPledgedForYear = adminData.reduce((sum, m) => sum + (m.pledge * 12), 0)
@@ -128,7 +135,7 @@ export default function AdminDashboard({ onLogout }) {
     printWindow.document.write(`<h2>Building Fund Report - ${viewYear}</h2>`)
     printWindow.document.write(`<p><strong>Total Collected:</strong> ₦${totalCollectedForYear.toLocaleString()}</p>`)
     printWindow.document.write('<table><thead><tr><th>Name</th><th>Code</th><th>Pledge</th><th>Months Paid</th><th>Total Paid</th></tr></thead><tbody>')
-    filteredData.forEach(m => {
+    allMembersAlphabetical.forEach(m => {
       printWindow.document.write(`<tr><td>${m.full_name}</td><td>${m.member_code}</td><td>₦${m.pledge.toLocaleString()}</td><td>${m.monthsPaidForYear}/12</td><td>₦${m.totalPaidForYear.toLocaleString()}</td></tr>`)
     })
     printWindow.document.write('</tbody></table></body></html>')
@@ -233,30 +240,46 @@ export default function AdminDashboard({ onLogout }) {
         {adminLoading ? (
           <p style={{ textAlign: 'center', padding: '2rem' }}>Loading...</p>
         ) : (
-          <div className="admin-bento-grid">
-            <MemberColumn 
-              title="Consistent" 
-              members={consistentPayers} 
-              icon={<CheckCircle size={20} color="#22c55e" />}
-              colorClass="col-green"
-              description="Paid 6 or more months. Great job!"
-            />
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+          <div className="admin-dashboard-layout">
+            
+            {/* Top Row: The 3 Groups */}
+            <div className="admin-bento-grid">
               <MemberColumn 
-                title="Needs Follow-up" 
-                members={needsFollowUp} 
-                icon={<Clock size={20} color="#d4af37" />}
-                colorClass="col-gold"
-                description="Paid 1-5 months. Give them a call."
+                title="Consistent" 
+                members={consistentPayers} 
+                icon={<CheckCircle size={20} color="#22c55e" />}
+                colorClass="col-green"
+                description="Paid 6 or more months. Great job!"
               />
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+                <MemberColumn 
+                  title="Needs Follow-up" 
+                  members={needsFollowUp} 
+                  icon={<Clock size={20} color="#d4af37" />}
+                  colorClass="col-gold"
+                  description="Paid 1-5 months."
+                />
+                <MemberColumn 
+                  title="No Payments" 
+                  members={noPayments} 
+                  icon={<AlertCircle size={20} color="#ef4444" />}
+                  colorClass="col-red"
+                  description="Haven't paid this year. Needs attention."
+                />
+              </div>
+            </div>
+
+            {/* Bottom Row: All Members Alphabetical */}
+            <div style={{ marginTop: '1.5rem' }}>
               <MemberColumn 
-                title="No Payments" 
-                members={noPayments} 
-                icon={<AlertCircle size={20} color="#ef4444" />}
-                colorClass="col-red"
-                description="Haven't paid this year. Needs attention."
+                title="All Registered Members" 
+                members={allMembersAlphabetical} 
+                icon={<Users size={20} color="#0a192f" />}
+                colorClass="col-all"
+                description="Complete list"
               />
             </div>
+
           </div>
         )}
       </main>

@@ -904,3 +904,21 @@ body {
     max-height: none;
   }
 }
+
+/* --- NEW: Full Width All Members Column --- */
+.col-all {
+  border-top: 5px solid #0a192f; /* Deep Navy */
+  background: #ffffff;
+}
+
+.col-all .member-code {
+  color: #0a192f;
+  font-weight: 600;
+}
+
+/* If the All Members list gets very long, let it scroll nicely on desktop */
+.col-all .column-list {
+  max-height: 400px;
+  overflow-y: auto;
+  padding-right: 10px;
+}

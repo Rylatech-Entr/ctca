@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import { supabase } from './supabase'
 import { PaystackButton } from 'paystack-react-lite'
+import { Eye, EyeOff } from 'lucide-react'
 import AdminDashboard from './AdminDashboard'
 
 // --- BIBLE PROMISES LIST (ALL 55) ---
@@ -64,13 +65,14 @@ const PROMISE_VERSES = [
 ]
 
 const MINIMUM_PAYMENT = 2000
-const PAYSTACK_PUBLIC_KEY = "pk_test_YOUR_PAYSTACK_PUBLIC_KEY_HERE" // <-- REPLACE THIS
+const PAYSTACK_PUBLIC_KEY = "pk_test_bde5a22d65ccb49fa64a2ba08ef180273eafe866"
+
+
 
 // ==========================================
 // --- ADMIN LOGIN & ROUTE ---
 // ==========================================
 function AdminRoute() {
-  // Initialize from localStorage immediately
   const [isAdminAuthenticated, setIsAdminAuthenticated] = useState(() => {
     return localStorage.getItem('ctca_admin') === 'true'
   })
@@ -131,7 +133,7 @@ function MemberApp() {
   const [loading, setLoading] = useState(false)
   const [errorMsg, setErrorMsg] = useState('')
   
-  // FIX #4: Initialize from localStorage synchronously to prevent redirect on refresh
+  // Initialize from localStorage synchronously
   const [currentUser, setCurrentUser] = useState(() => {
     const saved = localStorage.getItem('ctca_user')
     return saved ? JSON.parse(saved) : null
@@ -142,6 +144,9 @@ function MemberApp() {
   const [signupName, setSignupName] = useState('')
   const [signupPhone, setSignupPhone] = useState('')
   const [signupPassword, setSignupPassword] = useState('')
+  
+  // NEW: State for password visibility toggle
+  const [showPassword, setShowPassword] = useState(false)
 
   const [payments, setPayments] = useState([])
   const [viewYear, setViewYear] = useState('2025')
@@ -212,8 +217,14 @@ function MemberApp() {
     setErrorMsg('')
     const newCode = `TCA-${Math.floor(1000 + Math.random() * 9000)}`
     const { error } = await supabase.from('members').insert([{ full_name: signupName, phone_number: signupPhone, member_code: newCode, password: signupPassword }])
+    
     if (error) {
-      setErrorMsg("Error creating account. Code might be in use. Please try again.")
+      if (error.code === '23505') {
+        // This is the unique constraint violation for full_name
+        setErrorMsg("An account with this exact name already exists. Please add a middle name or initial.")
+      } else {
+        setErrorMsg("Error creating account. Please try again.")
+      }
     } else {
       setGeneratedCode(newCode)
       setAuthMode('success')
@@ -275,7 +286,7 @@ function MemberApp() {
   const toggleMonthSelection = (monthValue) => {
     if (paymentFund !== 'Building Fund') return;
     
-    // FIX #5: Prevent ticking before pledge is set
+    // Prevent ticking before pledge is set
     if (monthlyPledge === 0) {
       alert("Please set your monthly pledge before selecting months to pay.");
       return;
@@ -564,19 +575,30 @@ function MemberApp() {
                   <label>Phone Number (Optional)</label>
                   <input type="tel" placeholder="08012345678" value={signupPhone} onChange={(e) => setSignupPhone(e.target.value)} />
                 </div>
+                
                 <div className="input-group">
                   <label>Create a Password</label>
-                  {/* FIX #3: Password Validation */}
-                  <input 
-                    type="password" 
-                    placeholder="••••••••" 
-                    value={signupPassword} 
-                    onChange={(e) => setSignupPassword(e.target.value)} 
-                    required 
-                    minLength={6} 
-                    title="Password must be at least 6 characters"
-                  />
+                  <div style={{ position: 'relative' }}>
+                    <input 
+                      type={showPassword ? "text" : "password"} 
+                      placeholder="••••••••" 
+                      value={signupPassword} 
+                      onChange={(e) => setSignupPassword(e.target.value)} 
+                      required 
+                      minLength={6} 
+                      title="Password must be at least 6 characters"
+                      style={{ paddingRight: '40px' }}
+                    />
+                    <button 
+                      type="button"
+                      onClick={() => setShowPassword(!showPassword)}
+                      style={{ position: 'absolute', right: '10px', top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', cursor: 'pointer', color: '#64748b' }}
+                    >
+                      {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                    </button>
+                  </div>
                 </div>
+                
                 <button type="submit" className="btn-primary" disabled={loading}>
                   {loading ? 'Creating...' : 'Generate My Code'}
                 </button>

@@ -775,3 +775,132 @@ body {
     padding: 1rem;
   }
 }
+
+/* --- ADMIN BENTO GRID LAYOUT --- */
+.admin-bento-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr; /* Two columns side by side */
+  gap: 1.5rem;
+  align-items: start;
+}
+
+.admin-column {
+  background: #ffffff;
+  border-radius: 16px;
+  padding: 1.5rem;
+  box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
+  display: flex;
+  flex-direction: column;
+  max-height: 600px; /* Keeps the columns from getting too long */
+}
+
+.col-green { border-top: 5px solid #22c55e; }
+.col-gold { border-top: 5px solid #d4af37; }
+.col-red { border-top: 5px solid #ef4444; }
+
+.column-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.5rem;
+}
+
+.column-header h3 {
+  font-size: 1.1rem;
+  color: #0a192f;
+  margin: 0;
+}
+
+.count-badge {
+  background: #f1f5f9;
+  color: #475569;
+  font-weight: 800;
+  padding: 0.2rem 0.8rem;
+  border-radius: 20px;
+  font-size: 0.9rem;
+}
+
+.column-desc {
+  font-size: 0.85rem;
+  color: #64748b;
+  margin-bottom: 1.5rem;
+  border-bottom: 1px solid #f1f5f9;
+  padding-bottom: 1rem;
+}
+
+.column-list {
+  overflow-y: auto; /* Allows scrolling within the column */
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+  padding-right: 5px;
+}
+
+.empty-text {
+  color: #94a3b8;
+  font-style: italic;
+  text-align: center;
+  padding: 1rem;
+}
+
+/* Mini Member Cards inside the columns */
+@keyframes slideInRight {
+  from { opacity: 0; transform: translateX(-15px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+.mini-member-card {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  padding: 0.8rem 1rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  animation: slideInRight 0.4s ease-out forwards;
+  opacity: 0;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.mini-member-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+  border-color: #cbd5e1;
+}
+
+.member-name {
+  font-weight: 700;
+  color: #0a192f;
+  margin: 0 0 4px 0;
+  font-size: 0.95rem;
+}
+
+.member-code {
+  font-size: 0.75rem;
+  color: #64748b;
+  margin: 0;
+}
+
+.member-months {
+  font-weight: 800;
+  color: #0a192f;
+  margin: 0 0 4px 0;
+  font-size: 1rem;
+}
+
+.member-total {
+  font-size: 0.75rem;
+  color: #22c55e; /* Green text for money */
+  font-weight: 700;
+  margin: 0;
+}
+
+/* Mobile Stack */
+@media (max-width: 900px) {
+  .admin-bento-grid {
+    grid-template-columns: 1fr;
+  }
+  .admin-column {
+    max-height: none;
+  }
+}

@@ -11,6 +11,7 @@
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.119.0",
+    "lucide-react": "^1.73.0",
     "papaparse": "^5.7.0",
     "paystack-react-lite": "^0.1.101",
     "react": "^19.3.1",

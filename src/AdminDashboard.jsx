@@ -11,6 +11,9 @@ export default function AdminDashboard({ onLogout }) {
   const [isUploading, setIsUploading] = useState(false)
   const [uploadStatus, setUploadStatus] = useState('')
 
+  // NEW: Search State
+  const [searchQuery, setSearchQuery] = useState('')
+
   const fetchAdminData = async () => {
     setAdminLoading(true)
     const { data: members } = await supabase.from('members').select('*')
@@ -41,11 +44,16 @@ export default function AdminDashboard({ onLogout }) {
     fetchAdminData()
   }, [viewYear])
 
+  // Filter data based on search
+  const filteredData = adminData.filter(m => 
+    m.full_name.toLowerCase().includes(searchQuery.toLowerCase()) || 
+    m.member_code.toLowerCase().includes(searchQuery.toLowerCase())
+  )
+
   const totalCollectedForYear = adminData.reduce((sum, m) => sum + m.totalPaidForYear, 0)
   const totalPledgedForYear = adminData.reduce((sum, m) => sum + (m.pledge * 12), 0)
   const collectionRate = totalPledgedForYear > 0 ? ((totalCollectedForYear / totalPledgedForYear) * 100).toFixed(1) : 0
 
-  // --- CSV UPLOAD LOGIC ---
   const handleFileUpload = (e) => {
     const file = e.target.files[0]
     if (!file) return
@@ -60,24 +68,21 @@ export default function AdminDashboard({ onLogout }) {
         const rows = results.data
         setUploadStatus(`Found ${rows.length} records. Processing...`)
 
-        // 1. Group data by member to avoid duplicate member entries
         const membersMap = {}
 
         rows.forEach(row => {
-          if (!row.full_name) return // Skip empty rows
-          
+          if (!row.full_name) return 
           const code = row.member_code || `TCA-${Math.floor(1000 + Math.random() * 9000)}`
           
           if (!membersMap[code]) {
             membersMap[code] = {
               full_name: row.full_name,
               member_code: code,
-              password: 'Password123', // Default password
+              password: 'Password123', 
               pledge: Number(row.monthly_pledge) || 0,
               payments: []
             }
           }
-
           if (row.month_paid_for && row.amount) {
             membersMap[code].payments.push({
               month_paid_for: row.month_paid_for,
@@ -89,11 +94,9 @@ export default function AdminDashboard({ onLogout }) {
         const memberCodes = Object.keys(membersMap)
         let successCount = 0
 
-        // 2. Loop through each member and insert into database
         for (const code of memberCodes) {
           const m = membersMap[code]
           
-          // Insert Member
           const { error: memberError } = await supabase.from('members').insert([{
             full_name: m.full_name,
             member_code: m.member_code,
@@ -101,12 +104,10 @@ export default function AdminDashboard({ onLogout }) {
             phone_number: ''
           }])
 
-          // If member already exists, skip to prevent errors (or you can update them)
           if (memberError && memberError.code === '23505') {
              console.log(`Member ${code} already exists, skipping.`)
           }
 
-          // Insert Pledge
           if (m.pledge > 0) {
             await supabase.from('pledges').upsert([{
               member_code: m.member_code,
@@ -114,14 +115,13 @@ export default function AdminDashboard({ onLogout }) {
             }], { onConflict: 'member_code' })
           }
 
-          // Insert Payments
           if (m.payments.length > 0) {
             const paymentInserts = m.payments.map(p => ({
               member_code: m.member_code,
               amount: p.amount,
               fund_type: 'Building Fund',
               month_paid_for: p.month_paid_for,
-              paystack_reference: `LEGACY-${Date.now()}-${Math.random()}`, // Fake reference for legacy data
+              paystack_reference: `LEGACY-${Date.now()}-${Math.random()}`, 
               status: 'success'
             }))
             await supabase.from('payments').insert(paymentInserts)
@@ -131,7 +131,7 @@ export default function AdminDashboard({ onLogout }) {
 
         setUploadStatus(`Successfully imported ${successCount} members and their history!`)
         setIsUploading(false)
-        fetchAdminData() // Refresh the table
+        fetchAdminData() 
       },
       error: (error) => {
         setUploadStatus('Error parsing file: ' + error.message)
@@ -140,7 +140,6 @@ export default function AdminDashboard({ onLogout }) {
     })
   }
 
-  // --- PRINT REPORT ---
   const handlePrint = () => {
     const printWindow = window.open('', '', 'height=800,width=1000')
     printWindow.document.write('<html><head><title>CTCA Building Fund Report - ' + viewYear + '</title>')
@@ -163,7 +162,9 @@ export default function AdminDashboard({ onLogout }) {
     printWindow.document.write('<table><thead><tr>')
     printWindow.document.write('<th>Member Name</th><th>Member Code</th><th>Monthly Pledge</th><th>Months Paid</th><th>Total Contributed</th>')
     printWindow.document.write('</tr></thead><tbody>')
-    adminData.forEach(member => {
+    
+    // Print only filtered data
+    filteredData.forEach(member => {
       printWindow.document.write('<tr>')
       printWindow.document.write(`<td>${member.full_name}</td>`)
       printWindow.document.write(`<td>${member.member_code}</td>`)
@@ -216,7 +217,6 @@ export default function AdminDashboard({ onLogout }) {
           </div>
         </div>
 
-        {/* --- CSV UPLOAD PANEL --- */}
         <div className="bright-panel" style={{ marginTop: '1.5rem', borderLeft: '4px solid #0a192f' }}>
           <h3 style={{ marginBottom: '1rem', color: '#0a192f' }}>Import Legacy Data (CSV)</h3>
           <p style={{ color: '#64748b', fontSize: '0.9rem', marginBottom: '1rem' }}>
@@ -235,11 +235,20 @@ export default function AdminDashboard({ onLogout }) {
           {uploadStatus && <p style={{ marginTop: '1rem', color: '#0a192f', fontWeight: '600' }}>{uploadStatus}</p>}
         </div>
 
-        {/* --- LEDGER TABLE --- */}
         <div className="bright-panel" style={{ marginTop: '1.5rem' }}>
           <div className="panel-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem', borderBottom: '1px solid #f1f5f9', paddingBottom: '1rem' }}>
             <h3 style={{ margin: 0 }}>Member Ledger</h3>
             <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+              
+              {/* NEW: Search Bar */}
+              <input 
+                type="text" 
+                placeholder="Search by name or code..." 
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                style={{ padding: '0.4rem 1rem', borderRadius: '8px', border: '1px solid #cbd5e1', outline: 'none' }}
+              />
+
               <select className="year-selector" value={viewYear} onChange={(e) => setViewYear(e.target.value)}>
                 <option value="2025">2025</option>
                 <option value="2026">2026</option>
@@ -267,20 +276,24 @@ export default function AdminDashboard({ onLogout }) {
                   </tr>
                 </thead>
                 <tbody>
-                  {adminData.map(member => (
-                    <tr key={member.member_code}>
-                      <td style={{ fontWeight: '600', color: '#0a192f' }}>{member.full_name}</td>
-                      <td>{member.member_code}</td>
-                      <td>₦{member.pledge.toLocaleString()}</td>
-                      <td>{member.monthsPaidForYear} / 12</td>
-                      <td style={{ fontWeight: '800', color: '#0a192f' }}>₦{member.totalPaidForYear.toLocaleString()}</td>
-                      <td>
-                        <span className={`status-badge ${member.monthsPaidForYear >= 12 ? 'full' : member.monthsPaidForYear > 0 ? 'partial' : 'none'}`}>
-                          {member.monthsPaidForYear >= 12 ? 'Fully Paid' : member.monthsPaidForYear > 0 ? 'In Progress' : 'No Payments'}
-                        </span>
-                      </td>
-                    </tr>
-                  ))}
+                  {filteredData.length === 0 ? (
+                    <tr><td colSpan="6" style={{ textAlign: 'center', padding: '2rem' }}>No members found.</td></tr>
+                  ) : (
+                    filteredData.map(member => (
+                      <tr key={member.member_code}>
+                        <td style={{ fontWeight: '600', color: '#0a192f' }}>{member.full_name}</td>
+                        <td>{member.member_code}</td>
+                        <td>₦{member.pledge.toLocaleString()}</td>
+                        <td>{member.monthsPaidForYear} / 12</td>
+                        <td style={{ fontWeight: '800', color: '#0a192f' }}>₦{member.totalPaidForYear.toLocaleString()}</td>
+                        <td>
+                          <span className={`status-badge ${member.monthsPaidForYear >= 12 ? 'full' : member.monthsPaidForYear > 0 ? 'partial' : 'none'}`}>
+                            {member.monthsPaidForYear >= 12 ? 'Fully Paid' : member.monthsPaidForYear > 0 ? 'In Progress' : 'No Payments'}
+                          </span>
+                        </td>
+                      </tr>
+                    ))
+                  )}
                 </tbody>
               </table>
             </div>

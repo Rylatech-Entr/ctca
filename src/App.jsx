@@ -64,13 +64,16 @@ const PROMISE_VERSES = [
 ]
 
 const MINIMUM_PAYMENT = 2000
-const PAYSTACK_PUBLIC_KEY = "pk_test_bde5a22d65ccb49fa64a2ba08ef180273eafe866" // <-- REPLACE THIS
+const PAYSTACK_PUBLIC_KEY = "pk_test_YOUR_PAYSTACK_PUBLIC_KEY_HERE" // <-- REPLACE THIS
 
 // ==========================================
 // --- ADMIN LOGIN & ROUTE ---
 // ==========================================
 function AdminRoute() {
-  const [isAdminAuthenticated, setIsAdminAuthenticated] = useState(false)
+  // Initialize from localStorage immediately
+  const [isAdminAuthenticated, setIsAdminAuthenticated] = useState(() => {
+    return localStorage.getItem('ctca_admin') === 'true'
+  })
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
 
@@ -78,13 +81,19 @@ function AdminRoute() {
     e.preventDefault()
     if (password === "CTCA2025!") {
       setIsAdminAuthenticated(true)
+      localStorage.setItem('ctca_admin', 'true')
     } else {
       setError("Invalid Admin Password")
     }
   }
 
+  const handleAdminLogout = () => {
+    setIsAdminAuthenticated(false)
+    localStorage.removeItem('ctca_admin')
+  }
+
   if (isAdminAuthenticated) {
-    return <AdminDashboard onLogout={() => setIsAdminAuthenticated(false)} />
+    return <AdminDashboard onLogout={handleAdminLogout} />
   }
 
   return (
@@ -121,7 +130,12 @@ function MemberApp() {
   const [generatedCode, setGeneratedCode] = useState('')
   const [loading, setLoading] = useState(false)
   const [errorMsg, setErrorMsg] = useState('')
-  const [currentUser, setCurrentUser] = useState(null)
+  
+  // FIX #4: Initialize from localStorage synchronously to prevent redirect on refresh
+  const [currentUser, setCurrentUser] = useState(() => {
+    const saved = localStorage.getItem('ctca_user')
+    return saved ? JSON.parse(saved) : null
+  })
 
   const [loginCode, setLoginCode] = useState('')
   const [loginPassword, setLoginPassword] = useState('')
@@ -199,7 +213,7 @@ function MemberApp() {
     const newCode = `TCA-${Math.floor(1000 + Math.random() * 9000)}`
     const { error } = await supabase.from('members').insert([{ full_name: signupName, phone_number: signupPhone, member_code: newCode, password: signupPassword }])
     if (error) {
-      setErrorMsg("Error creating account.")
+      setErrorMsg("Error creating account. Code might be in use. Please try again.")
     } else {
       setGeneratedCode(newCode)
       setAuthMode('success')
@@ -217,6 +231,7 @@ function MemberApp() {
       setErrorMsg("Invalid Member Code or Password.")
     } else {
       setCurrentUser(data)
+      localStorage.setItem('ctca_user', JSON.stringify(data)) // Save session
       setLoginCode(''); setLoginPassword('')
     }
     setLoading(false)
@@ -224,6 +239,7 @@ function MemberApp() {
 
   const handleLogout = () => {
     setCurrentUser(null)
+    localStorage.removeItem('ctca_user') // Clear session
     setAuthMode('login')
     setPayments([])
     setMonthlyPledge(0)
@@ -258,8 +274,16 @@ function MemberApp() {
 
   const toggleMonthSelection = (monthValue) => {
     if (paymentFund !== 'Building Fund') return;
+    
+    // FIX #5: Prevent ticking before pledge is set
+    if (monthlyPledge === 0) {
+      alert("Please set your monthly pledge before selecting months to pay.");
+      return;
+    }
+
     const isPaid = payments.some(p => p.month_paid_for === monthValue && p.fund_type === 'Building Fund')
     if (isPaid) return; 
+    
     setSelectedMonths(prev => {
       if (prev.includes(monthValue)) {
         return prev.filter(m => m !== monthValue)
@@ -515,6 +539,11 @@ function MemberApp() {
                   {loading ? 'Checking...' : 'Log In'}
                 </button>
               </form>
+              
+              <p style={{ fontSize: '0.8rem', color: '#64748b', textAlign: 'center', marginTop: '1rem' }}>
+                Forgot your code? Please contact the church administrator to recover it.
+              </p>
+
               <div className="toggle-text">
                 Don't have a code? 
                 <button onClick={() => { setAuthMode('signup'); setErrorMsg(''); }}>Register Here</button>
@@ -537,7 +566,16 @@ function MemberApp() {
                 </div>
                 <div className="input-group">
                   <label>Create a Password</label>
-                  <input type="password" placeholder="••••••••" value={signupPassword} onChange={(e) => setSignupPassword(e.target.value)} required />
+                  {/* FIX #3: Password Validation */}
+                  <input 
+                    type="password" 
+                    placeholder="••••••••" 
+                    value={signupPassword} 
+                    onChange={(e) => setSignupPassword(e.target.value)} 
+                    required 
+                    minLength={6} 
+                    title="Password must be at least 6 characters"
+                  />
                 </div>
                 <button type="submit" className="btn-primary" disabled={loading}>
                   {loading ? 'Creating...' : 'Generate My Code'}

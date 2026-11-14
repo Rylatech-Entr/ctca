@@ -53,7 +53,7 @@ export default function AdminDashboard({ onLogout }) {
   const needsFollowUp = filteredData.filter(m => m.monthsPaidForYear > 0 && m.monthsPaidForYear < 6)
   const noPayments = filteredData.filter(m => m.monthsPaidForYear === 0)
   
-  // NEW: Alphabetical list of all members
+  // Alphabetical list of all members
   const allMembersAlphabetical = [...filteredData].sort((a, b) => 
     a.full_name.localeCompare(b.full_name)
   )
@@ -143,6 +143,7 @@ export default function AdminDashboard({ onLogout }) {
     printWindow.print()
   }
 
+  // Reusable Column Component
   const MemberColumn = ({ title, members, icon, colorClass, description }) => (
     <div className={`admin-column ${colorClass}`}>
       <div className="column-header">
@@ -159,12 +160,12 @@ export default function AdminDashboard({ onLogout }) {
           <p className="empty-text">No members here.</p>
         ) : (
           members.map((member, idx) => (
-            <div key={member.member_code} className="mini-member-card" style={{ animationDelay: `${idx * 0.05}s` }}>
-              <div>
+            <div key={member.member_code} className="mini-member-card" style={{ animationDelay: `${idx * 0.03}s` }}>
+              <div className="member-info-left">
                 <p className="member-name">{member.full_name}</p>
                 <p className="member-code">{member.member_code} • ₦{member.pledge.toLocaleString()}/mo</p>
               </div>
-              <div style={{ textAlign: 'right' }}>
+              <div className="member-info-right">
                 <p className="member-months">{member.monthsPaidForYear}/12</p>
                 <p className="member-total">₦{member.totalPaidForYear.toLocaleString()}</p>
               </div>
@@ -198,7 +199,7 @@ export default function AdminDashboard({ onLogout }) {
         </div>
 
         {/* STATS ROW */}
-        <div className="admin-stats-grid" style={{ gridTemplateColumns: '1fr 1fr', marginBottom: '1.5rem' }}>
+        <div className="admin-stats-grid">
           <div className="bright-panel stat-card animate-pop">
             <h3>Total Members</h3>
             <p className="stat-number">{adminData.length}</p>
@@ -236,22 +237,25 @@ export default function AdminDashboard({ onLogout }) {
           </div>
         </div>
 
-        {/* BENTO GRID DASHBOARD */}
+        {/* DASHBOARD LAYOUT */}
         {adminLoading ? (
           <p style={{ textAlign: 'center', padding: '2rem' }}>Loading...</p>
         ) : (
           <div className="admin-dashboard-layout">
             
-            {/* Top Row: The 3 Groups */}
-            <div className="admin-bento-grid">
+            {/* Top Grid: 2 Columns */}
+            <div className="admin-top-grid">
+              {/* Left Side - Consistent */}
               <MemberColumn 
-                title="Consistent" 
+                title="Consistent Payers" 
                 members={consistentPayers} 
                 icon={<CheckCircle size={20} color="#22c55e" />}
                 colorClass="col-green"
                 description="Paid 6 or more months. Great job!"
               />
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+              
+              {/* Right Side - Stacked Follow-up and No Payments */}
+              <div className="admin-right-stack">
                 <MemberColumn 
                   title="Needs Follow-up" 
                   members={needsFollowUp} 
@@ -269,16 +273,14 @@ export default function AdminDashboard({ onLogout }) {
               </div>
             </div>
 
-            {/* Bottom Row: All Members Alphabetical */}
-            <div style={{ marginTop: '1.5rem' }}>
-              <MemberColumn 
-                title="All Registered Members" 
-                members={allMembersAlphabetical} 
-                icon={<Users size={20} color="#0a192f" />}
-                colorClass="col-all"
-                description="Complete list"
-              />
-            </div>
+            {/* Bottom Row - All Members */}
+            <MemberColumn 
+              title="All Registered Members (A-Z)" 
+              members={allMembersAlphabetical} 
+              icon={<Users size={20} color="#0a192f" />}
+              colorClass="col-all"
+              description="Complete list of everyone."
+            />
 
           </div>
         )}

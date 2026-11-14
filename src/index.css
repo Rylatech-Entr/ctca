@@ -611,18 +611,25 @@ body {
   }
 }
 
+/* =========================================
+   ADMIN DASHBOARD - PREMIUM LAYOUT
+   ========================================= */
 
-/* --- ADMIN DASHBOARD STYLES --- */
+/* Stats Row */
 .admin-stats-grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: 1fr 1fr;
   gap: 1.5rem;
-  margin-top: 1.5rem;
+  margin-bottom: 1.5rem;
 }
 
 .stat-card {
   text-align: center;
-  padding: 2rem 1rem;
+  padding: 2rem 1.5rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
 }
 
 .stat-card h3 {
@@ -634,170 +641,51 @@ body {
 }
 
 .stat-number {
-  font-size: 2.2rem;
+  font-size: 2.5rem;
   font-weight: 800;
   color: #0a192f;
   margin: 0;
+  line-height: 1;
 }
 
-.admin-table {
-  width: 100%;
-  border-collapse: collapse;
-}
-
-.admin-table th, 
-.admin-table td {
-  padding: 1rem;
-  text-align: left;
-  border-bottom: 1px solid #f1f5f9;
-}
-
-.admin-table th {
-  color: #64748b;
-  font-size: 0.8rem;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  background: #f8fafc;
-}
-
-.admin-table tr:hover td {
-  background: #f8fafc;
-}
-
-.status-badge {
-  padding: 0.3rem 0.8rem;
-  border-radius: 20px;
-  font-size: 0.75rem;
-  font-weight: 700;
-}
-
-.status-badge.full {
-  background: #f0fdf4;
-  color: #166534;
-}
-
-.status-badge.partial {
-  background: #fefce8;
-  color: #854d0e;
-}
-
-.status-badge.none {
-  background: #fef2f2;  
-  color: #991b1b;
-}
-
-@media (max-width: 900px) {
-  .admin-stats-grid {
-    grid-template-columns: 1fr;
-  }
-}
-
-/* --- ADMIN GROUPING & ANIMATIONS --- */
-
-/* Stat Card Animations */
-@keyframes popIn {
-  0% { opacity: 0; transform: scale(0.9); }
-  100% { opacity: 1; transform: scale(1); }
-}
-
-.animate-pop {
-  animation: popIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
-  opacity: 0;
-}
-
-/* Group Container */
-.admin-groups-container {
+/* Main Grid Layout */
+.admin-dashboard-layout {
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
-  margin-top: 1.5rem;
 }
 
-/* Group Panels */
-.admin-group-panel {
-  padding: 1.5rem;
-  border-radius: 16px;
-}
-
-.admin-group-panel h3 {
-  font-size: 1.1rem;
-  color: #0a192f;
-}
-
-.admin-group-panel .badge {
-  background: #f1f5f9;
-  color: #475569;
-  font-weight: 800;
-}
-
-/* Specific Group Colors */
-.group-consistent {
-  border-top: 5px solid #22c55e; /* Green */
-}
-.group-consistent .badge {
-  background: #f0fdf4;
-  color: #166534;
-}
-
-.group-followup {
-  border-top: 5px solid #d4af37; /* Gold */
-}
-.group-followup .badge {
-  background: #fefce8;
-  color: #854d0e;
-}
-
-.group-nopay {
-  border-top: 5px solid #ef4444; /* Red */
-}
-.group-nopay .badge {
-  background: #fef2f2;
-  color: #991b1b;
-}
-
-/* Row Animations */
-@keyframes slideInRight {
-  from { opacity: 0; transform: translateX(-10px); }
-  to { opacity: 1; transform: translateX(0); }
-}
-
-.animated-row {
-  animation: slideInRight 0.4s ease-out forwards;
-  opacity: 0;
-}
-
-/* Mobile Adjustments */
-@media (max-width: 768px) {
-  .admin-stats-grid {
-    grid-template-columns: 1fr !important;
-  }
-  .admin-group-panel {
-    padding: 1rem;
-  }
-}
-
-/* --- ADMIN BENTO GRID LAYOUT --- */
-.admin-bento-grid {
+/* Top Row: 2 Columns (Left large, Right stacked) */
+.admin-top-grid {
   display: grid;
-  grid-template-columns: 1fr 1fr; /* Two columns side by side */
+  grid-template-columns: 1.2fr 1fr;
   gap: 1.5rem;
   align-items: start;
 }
 
+.admin-right-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+/* Column Panels */
 .admin-column {
   background: #ffffff;
   border-radius: 16px;
   padding: 1.5rem;
   box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
+  border: 1px solid #e2e8f0;
   display: flex;
   flex-direction: column;
-  max-height: 600px; /* Keeps the columns from getting too long */
 }
 
-.col-green { border-top: 5px solid #22c55e; }
-.col-gold { border-top: 5px solid #d4af37; }
-.col-red { border-top: 5px solid #ef4444; }
+.admin-column.col-green { border-top: 5px solid #22c55e; }
+.admin-column.col-gold { border-top: 5px solid #d4af37; }
+.admin-column.col-red { border-top: 5px solid #ef4444; }
+.admin-column.col-all { border-top: 5px solid #0a192f; }
 
+/* Headers inside columns */
 .column-header {
   display: flex;
   justify-content: space-between;
@@ -809,6 +697,7 @@ body {
   font-size: 1.1rem;
   color: #0a192f;
   margin: 0;
+  font-weight: 800;
 }
 
 .count-badge {
@@ -817,33 +706,52 @@ body {
   font-weight: 800;
   padding: 0.2rem 0.8rem;
   border-radius: 20px;
-  font-size: 0.9rem;
+  font-size: 0.85rem;
 }
 
 .column-desc {
   font-size: 0.85rem;
   color: #64748b;
   margin-bottom: 1.5rem;
-  border-bottom: 1px solid #f1f5f9;
   padding-bottom: 1rem;
+  border-bottom: 1px solid #f1f5f9;
 }
 
+/* Scrollable List Container */
 .column-list {
-  overflow-y: auto; /* Allows scrolling within the column */
   display: flex;
   flex-direction: column;
   gap: 0.8rem;
-  padding-right: 5px;
+  max-height: 450px;
+  overflow-y: auto;
+  padding-right: 8px; /* Space for scrollbar */
+}
+
+/* Custom Scrollbar for the lists */
+.column-list::-webkit-scrollbar {
+  width: 6px;
+}
+.column-list::-webkit-scrollbar-track {
+  background: #f1f5f9;
+  border-radius: 10px;
+}
+.column-list::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 10px;
+}
+.column-list::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
 }
 
 .empty-text {
   color: #94a3b8;
   font-style: italic;
   text-align: center;
-  padding: 1rem;
+  padding: 2rem 1rem;
+  font-size: 0.9rem;
 }
 
-/* Mini Member Cards inside the columns */
+/* Member Cards inside the columns */
 @keyframes slideInRight {
   from { opacity: 0; transform: translateX(-15px); }
   to { opacity: 1; transform: translateX(0); }
@@ -853,19 +761,31 @@ body {
   background: #f8fafc;
   border: 1px solid #e2e8f0;
   border-radius: 10px;
-  padding: 0.8rem 1rem;
+  padding: 1rem;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  animation: slideInRight 0.4s ease-out forwards;
-  opacity: 0;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  animation: slideInRight 0.3s ease-out forwards;
+  transition: all 0.2s ease;
 }
 
 .mini-member-card:hover {
   transform: translateY(-2px);
-  box-shadow: 0 4px 10px rgba(0,0,0,0.05);
-  border-color: #cbd5e1;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+  border-color: #d4af37;
+  background: #ffffff;
+}
+
+.member-info-left {
+  display: flex;
+  flex-direction: column;
+}
+
+.member-info-right {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  text-align: right;
 }
 
 .member-name {
@@ -890,35 +810,20 @@ body {
 
 .member-total {
   font-size: 0.75rem;
-  color: #22c55e; /* Green text for money */
+  color: #22c55e;
   font-weight: 700;
   margin: 0;
 }
 
-/* Mobile Stack */
+/* Mobile Responsiveness */
 @media (max-width: 900px) {
-  .admin-bento-grid {
+  .admin-top-grid {
+    grid-template-columns: 1fr; /* Stacks everything on mobile */
+  }
+  .admin-stats-grid {
     grid-template-columns: 1fr;
   }
-  .admin-column {
-    max-height: none;
+  .column-list {
+    max-height: none; /* Let it expand fully on mobile */
   }
-}
-
-/* --- NEW: Full Width All Members Column --- */
-.col-all {
-  border-top: 5px solid #0a192f; /* Deep Navy */
-  background: #ffffff;
-}
-
-.col-all .member-code {
-  color: #0a192f;
-  font-weight: 600;
-}
-
-/* If the All Members list gets very long, let it scroll nicely on desktop */
-.col-all .column-list {
-  max-height: 400px;
-  overflow-y: auto;
-  padding-right: 10px;
 }
